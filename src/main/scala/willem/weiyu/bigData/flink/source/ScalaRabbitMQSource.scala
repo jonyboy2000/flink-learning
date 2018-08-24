@@ -1,26 +1,31 @@
 package willem.weiyu.bigData.flink.source
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema
+import org.apache.flink.streaming.api.CheckpointingMode
+import org.apache.flink.streaming.api.functions.ProcessFunction
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
 
 object ScalaRabbitMQSource {
-  val topicName = "gome-dq-queue-test"
+//  val topicName = "gome-dq-queue-test"
+  val topicName = "gome-queue-sh-500"
 
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    env.enableCheckpointing(10000)
+    //添加容错
+    env.enableCheckpointing(10000,CheckpointingMode.EXACTLY_ONCE)
 
     val connectionConfig = new RMQConnectionConfig.Builder()
-      .setHost("http://10.152.18.36")
+      .setHost("10.152.18.36")
       .setPort(5672)
-      .setVirtualHost("dq")
+      .setVirtualHost("/")
       .setUserName("guest")
       .setPassword("guest")
       .build()
 
-    val stream = env.addSource(new RMQSource[String](connectionConfig,topicName,false,new SimpleStringSchema())).setParallelism(1)
+    //为保证exactly-once，并发度必须为1
+    val stream = env.addSource(new RMQSource[String](connectionConfig,topicName,true,new SimpleStringSchema())).setParallelism(1)
 
     stream.print
 
