@@ -20,8 +20,8 @@ object ScalaKafkaSource {
 
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    env.enableCheckpointing(10000)
-    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
+    env.enableCheckpointing(10000,CheckpointingMode.EXACTLY_ONCE)
+    //env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
     val props = new Properties()

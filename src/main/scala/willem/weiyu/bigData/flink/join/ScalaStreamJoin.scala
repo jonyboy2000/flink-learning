@@ -1,6 +1,6 @@
 package willem.weiyu.bigData.flink.join
 
-import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
@@ -9,8 +9,10 @@ import org.apache.flink.util.Collector
 import willem.weiyu.bigData.flink.StringLineEventSource
 
 object ScalaStreamJoin {
+
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.enableCheckpointing(5000,CheckpointingMode.EXACTLY_ONCE)
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
     val line = env.addSource(new StringLineEventSource)
