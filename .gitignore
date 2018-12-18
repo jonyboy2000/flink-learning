@@ -28,3 +28,4 @@ hs_err_pid*
 /flink-kafka/flink-kafka.iml
 /flink-core/target/
 /flink-kafka/target/
+/flink-learning.iml
