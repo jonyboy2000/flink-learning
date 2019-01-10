@@ -31,6 +31,9 @@ import java.util.Properties;
  */
 public class SimpleFlinkKafka {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static final String BOOTSTRAP_SERVERS = "10.26.27.81:9092";
+    private static final String KAFKA_CONSUMER_GROUP = "flink-group";
+    private static final String KAFKA_TOPIC = "test";
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -38,9 +41,9 @@ public class SimpleFlinkKafka {
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
         Properties props = new Properties();
-        props.setProperty("bootstrap.servers","10.152.18.54:9092,10.152.18.55:9092,10.152.18.61:9092");
-        props.setProperty("group.id","flink-test");
-        FlinkKafkaConsumer010<String> consumer = new FlinkKafkaConsumer010<>("fen_0310_test", new SimpleStringSchema(),props);
+        props.setProperty("bootstrap.servers", BOOTSTRAP_SERVERS);
+        props.setProperty("group.id",KAFKA_CONSUMER_GROUP);
+        FlinkKafkaConsumer010<String> consumer = new FlinkKafkaConsumer010<>(KAFKA_TOPIC, new SimpleStringSchema(),props);
         consumer.setStartFromEarliest();
         DataStream<String> stream = env.addSource(consumer);
 

@@ -16,10 +16,11 @@ import java.io.File;
  * @since 1.0.0
  */
 public class JavaWordCount {
+    private static final String TEXT_PATH = "D:" + File.separator + "test.txt";
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStreamSource<String> lines = env.readTextFile("E:" + File.separator + "test.txt");
+        DataStreamSource<String> lines = env.readTextFile(TEXT_PATH);
         DataStream<WordWithCount> windowCounts = lines.flatMap(new FlatMapFunction<String, WordWithCount>() {
             public void flatMap(String line, Collector<WordWithCount> collector) throws Exception {
                 for (String word : line.split("\\s+")) {
@@ -27,11 +28,7 @@ public class JavaWordCount {
                 }
             }
         }).keyBy("word")
-                .reduce(new ReduceFunction<WordWithCount>() {
-                    public WordWithCount reduce(WordWithCount a, WordWithCount b) throws Exception {
-                        return new WordWithCount(a.word,a.count+b.count);
-                    }
-                });
+                .reduce((ReduceFunction<WordWithCount>) (a, b) -> new WordWithCount(a.word,a.count+b.count));
 
         windowCounts.print().setParallelism(1);
         env.execute("java wordCount demo");
